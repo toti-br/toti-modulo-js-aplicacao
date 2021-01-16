@@ -44,7 +44,7 @@ function createSampleCardElement() {
 
 function truncateText(text, max = 30) {
   if (text.length > max) {
-    return text.slice(0, max-3) + '...'
+    return text.slice(0, max - 3) + "..."
   }
   return text
 }
@@ -52,7 +52,14 @@ function truncateText(text, max = 30) {
 function displayResultsAsCards(container_el, results) {
   container_el.innerHTML = ""
   for (let result of results) {
-    container_el.appendChild(createCardElement(result.title, result.explanation, result.url, result.title))
+    container_el.appendChild(
+      createCardElement(
+        result.title,
+        result.explanation,
+        result.url,
+        result.title
+      )
+    )
   }
 }
 
@@ -65,8 +72,8 @@ function displayCardPlaceholders(container_el, quantity) {
 
 class ApiConnection {
   constructor() {
-      // this.API_KEY = "https://api.nasa.gov/planetary/apod"
-      // this.API_URL = "DEMO_KEY"
+    // this.API_KEY = "https://api.nasa.gov/planetary/apod"
+    // this.API_URL = "DEMO_KEY"
   }
 
   get API_URL() {
@@ -109,33 +116,45 @@ class ApiConnection {
 document.addEventListener("DOMContentLoaded", function startApp() {
   const search_results_el = document.getElementById("search-results")
   const search_form_el = document.getElementById("search-form")
+  const search_type_option_els = document.querySelectorAll("[name=search-type]")
   const api_connection = new ApiConnection()
 
-
   displayCardPlaceholders(search_results_el, 15)
-  
 
   api_connection
-  .getRandomImages(10)
-  .then(results => displayResultsAsCards(search_results_el, results))
-  .catch((err) => console.error(err))
+    .getRandomImages(10)
+    .then((results) => displayResultsAsCards(search_results_el, results))
+    .catch((err) => console.error(err))
 
+  search_form_el.addEventListener(
+    "submit",
+    function submitSearchAndLoadResults(event) {
+      event.preventDefault()
 
-  search_form_el.addEventListener("submit", function submitSearchAndLoadResults(event) {
-    event.preventDefault()
-
-    const form_data = new FormData(event.target)
-    const search_type = form_data.get("search-type")
-    const random_count = +form_data.get("random-qty")
-    if (search_type === "random" && random_count) {
-      displayCardPlaceholders(search_results_el, random_count <= 15 ? random_count : 15)
-      api_connection
-      .getRandomImages(random_count)
-      .then(results => displayResultsAsCards(search_results_el, results))
-      .catch((err) => console.error(err))
+      const form_data = new FormData(event.target)
+      const search_type = form_data.get("search-type")
+      const random_count = +form_data.get("random-qty")
+      if (search_type === "random" && random_count) {
+        displayCardPlaceholders(
+          search_results_el,
+          random_count <= 15 ? random_count : 15
+        )
+        api_connection
+          .getRandomImages(random_count)
+          .then((results) => displayResultsAsCards(search_results_el, results))
+          .catch((err) => console.error(err))
+      }
     }
+  )
+
+  Array.from(search_type_option_els).forEach((opt_el) => {
+    opt_el.addEventListener(
+      "change",
+      function changeEnabledSearchType(event) {
+        document.querySelectorAll("[data-search-type-fieldset]").forEach(fs => {
+          fs.disabled = event.target.value !== fs.dataset.searchTypeFieldset
+        })
+      }
+    )
   })
-
-
-
 })

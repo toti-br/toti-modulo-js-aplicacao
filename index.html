@@ -25,21 +25,21 @@
                     </div>
                     
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="search-type" id="search-type-date-range" value="random">
+                        <input class="form-check-input" type="radio" name="search-type" id="search-type-date-range" value="date-range">
                         <label class="form-check-label" for="search-type-date-range">
                             Imagens por período
                         </label>
                     </div>
                 </fieldset>
 
-                <fieldset class="col-auto">
+                <fieldset class="col-auto" data-search-type-fieldset="random">
                     <legend>Imagens Aleatóreas</legend>
                     
                     <label for="random-qty">Quantidade</label>
                     <input name="random-qty" id="random-qty" type="number" value=10 class="form-control">    
                 </fieldset>
     
-                <fieldset class="col-auto" disabled>
+                <fieldset class="col-auto" data-search-type-fieldset="date-range" disabled>
                     <legend>Imagens por período</legend>
 
                     <div class="row">
