@@ -108,6 +108,7 @@ class ApiConnection {
 
 document.addEventListener("DOMContentLoaded", function startApp() {
   const search_results_el = document.getElementById("search-results")
+  const search_form_el = document.getElementById("search-form")
   const api_connection = new ApiConnection()
 
 
@@ -118,4 +119,23 @@ document.addEventListener("DOMContentLoaded", function startApp() {
   .getRandomImages(10)
   .then(results => displayResultsAsCards(search_results_el, results))
   .catch((err) => console.error(err))
+
+
+  search_form_el.addEventListener("submit", function submitSearchAndLoadResults(event) {
+    event.preventDefault()
+
+    const form_data = new FormData(event.target)
+    const search_type = form_data.get("search-type")
+    const random_count = +form_data.get("random-qty")
+    if (search_type === "random" && random_count) {
+      displayCardPlaceholders(search_results_el, random_count <= 15 ? random_count : 15)
+      api_connection
+      .getRandomImages(random_count)
+      .then(results => displayResultsAsCards(search_results_el, results))
+      .catch((err) => console.error(err))
+    }
+  })
+
+
+
 })
