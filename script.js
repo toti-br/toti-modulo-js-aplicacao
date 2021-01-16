@@ -42,36 +42,45 @@ function createSampleCard() {
   return createCard("Carregando...", "...")
 }
 
-function ApiConnection() {}
-
-ApiConnection.prototype.API_URL = "https://api.nasa.gov/planetary/apod"
-ApiConnection.prototype.API_KEY = "DEMO_KEY"
-
-ApiConnection.prototype.getRandomImages = async function (count) {
-  const request_url =
-    this.API_URL + "?api_key=" + this.API_KEY + "&count=" + count
-
-  const resp = await fetch(request_url)
-  if (resp.ok) {
-    return await resp.json()
-  }
-  throw new Error("Error fetching API, status: " + resp.status)
-}
-
-ApiConnection.prototype.getImagesForDateRange = async function (
-    start_date,
-    end_date
-) {
-  let request_url = this.API_URL + "?api_key=" + this.API_KEY
-  if (end_date) {
-    request_url += "&start_date=" + start_date + "&end_date=" + end_date
-  } else {
-    request_url += "&start_date=" + start_date
+class ApiConnection {
+  constructor() {
+      // this.API_KEY = "https://api.nasa.gov/planetary/apod"
+      // this.API_URL = "DEMO_KEY"
   }
 
-  const resp = await fetch(request_url)
-  if (resp.ok) {
-    return await resp.json()
+  get API_URL() {
+    return "https://api.nasa.gov/planetary/apod"
   }
-  throw new Error("Error fetching API, status: " + resp.status)
+
+  get API_KEY() {
+    return "DEMO_KEY"
+  }
+
+  get API_URL_WITH_KEY() {
+    return this.API_URL + "?api_key=" + this.API_KEY
+  }
+
+  async getRandomImages(count) {
+    const request_url = this.API_URL_WITH_KEY + "&count=" + count
+
+    const resp = await fetch(request_url)
+    if (resp.ok) {
+      return await resp.json()
+    }
+    throw new Error("Error fetching API, status: " + resp.status)
+  }
+  async getImagesForDateRange(start_date, end_date) {
+    let request_url = this.API_URL_WITH_KEY
+    if (end_date) {
+      request_url += "&start_date=" + start_date + "&end_date=" + end_date
+    } else {
+      request_url += "&start_date=" + start_date
+    }
+
+    const resp = await fetch(request_url)
+    if (resp.ok) {
+      return await resp.json()
+    }
+    throw new Error("Error fetching API, status: " + resp.status)
+  }
 }
