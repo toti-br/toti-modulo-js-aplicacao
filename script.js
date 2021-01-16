@@ -87,10 +87,21 @@ class ApiConnection {
 
 document.addEventListener("DOMContentLoaded", function startApp() {
   const search_results_el = document.getElementById("search-results")
+  const api_connection = new ApiConnection()
 
 
   search_results_el.innerHTML = ""
   for (let i = 0; i < 10; i++) {
     search_results_el.appendChild(createSampleCardElement())
   }
+
+  api_connection
+  .getRandomImages(10)
+  .then(results => {
+    search_results_el.innerHTML = ""
+    for (let result of results) {
+      search_results_el.appendChild(createCardElement(result.title, result.explanation, result.url, result.title))
+    }
+  })
+  .catch((err) => console.error(err))
 })
