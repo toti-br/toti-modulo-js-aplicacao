@@ -26,18 +26,52 @@ function createCard(title, description, image_url, image_description) {
 }
 
 function createImage(url, description) {
-    let el
-    if (url && description) {
-        el = document.createElement("img")
-        el.src = url
-        el.alt = description
-    } else {
-        el = document.createElement("div")
-        el.classList.add("img-sample")
-    }
-    return el
+  let el
+  if (url && description) {
+    el = document.createElement("img")
+    el.src = url
+    el.alt = description
+  } else {
+    el = document.createElement("div")
+    el.classList.add("img-sample")
+  }
+  return el
 }
 
 function createSampleCard() {
-  return createCard('Carregando...', '...')
+  return createCard("Carregando...", "...")
+}
+
+function ApiConnection() {}
+
+ApiConnection.prototype.API_URL = "https://api.nasa.gov/planetary/apod"
+ApiConnection.prototype.API_KEY = "DEMO_KEY"
+
+ApiConnection.prototype.getRandomImages = async function (count) {
+  const request_url =
+    this.API_URL + "?api_key=" + this.API_KEY + "&count=" + count
+
+  const resp = await fetch(request_url)
+  if (resp.ok) {
+    return await resp.json()
+  }
+  throw new Error("Error fetching API, status: " + resp.status)
+}
+
+ApiConnection.prototype.getImagesForDateRange = async function (
+    start_date,
+    end_date
+) {
+  let request_url = this.API_URL + "?api_key=" + this.API_KEY
+  if (end_date) {
+    request_url += "&start_date=" + start_date + "&end_date=" + end_date
+  } else {
+    request_url += "&start_date=" + start_date
+  }
+
+  const resp = await fetch(request_url)
+  if (resp.ok) {
+    return await resp.json()
+  }
+  throw new Error("Error fetching API, status: " + resp.status)
 }
