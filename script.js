@@ -1,8 +1,8 @@
-function createCard(title, description, image_url, image_description) {
+function createCardElement(title, description, image_url, image_description) {
   let card_el = document.createElement("article")
   card_el.classList.add("card", "mb-2", "me-4")
 
-  let image_el = createImage(image_url, image_description)
+  let image_el = createImageElement(image_url, image_description)
   image_el.classList.add("card-img-top")
 
   let card_body_el = document.createElement("div")
@@ -25,7 +25,7 @@ function createCard(title, description, image_url, image_description) {
   return card_el
 }
 
-function createImage(url, description) {
+function createImageElement(url, description) {
   let el
   if (url && description) {
     el = document.createElement("img")
@@ -38,8 +38,8 @@ function createImage(url, description) {
   return el
 }
 
-function createSampleCard() {
-  return createCard("Carregando...", "...")
+function createSampleCardElement() {
+  return createCardElement("Carregando...", "...")
 }
 
 class ApiConnection {
@@ -91,6 +91,6 @@ document.addEventListener("DOMContentLoaded", function startApp() {
 
   search_results_el.innerHTML = ""
   for (let i = 0; i < 10; i++) {
-    search_results_el.appendChild(createSampleCard())
+    search_results_el.appendChild(createSampleCardElement())
   }
 })
