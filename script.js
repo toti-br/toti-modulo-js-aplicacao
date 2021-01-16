@@ -84,3 +84,13 @@ class ApiConnection {
     throw new Error("Error fetching API, status: " + resp.status)
   }
 }
+
+document.addEventListener("DOMContentLoaded", function startApp() {
+  const search_results_el = document.getElementById("search-results")
+
+
+  search_results_el.innerHTML = ""
+  for (let i = 0; i < 10; i++) {
+    search_results_el.appendChild(createSampleCard())
+  }
+})
