@@ -13,7 +13,7 @@ function createCardElement(title, description, image_url, image_description) {
   title_el.classList.add("card-title")
 
   let text_el = document.createElement("p")
-  text_el.textContent = description
+  text_el.textContent = truncateText(description, 100)
   text_el.classList.add("card-text")
 
   card_body_el.appendChild(title_el)
@@ -40,6 +40,13 @@ function createImageElement(url, description) {
 
 function createSampleCardElement() {
   return createCardElement("Carregando...", "...")
+}
+
+function truncateText(text, max = 30) {
+  if (text.length > max) {
+    return text.slice(0, max-3) + '...'
+  }
+  return text
 }
 
 class ApiConnection {
