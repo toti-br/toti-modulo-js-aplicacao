@@ -49,6 +49,20 @@ function truncateText(text, max = 30) {
   return text
 }
 
+function displayResultsAsCards(container_el, results) {
+  container_el.innerHTML = ""
+  for (let result of results) {
+    container_el.appendChild(createCardElement(result.title, result.explanation, result.url, result.title))
+  }
+}
+
+function displayCardPlaceholders(container_el, quantity) {
+  container_el.innerHTML = ""
+  for (let i = 0; i < quantity; i++) {
+    container_el.appendChild(createSampleCardElement())
+  }
+}
+
 class ApiConnection {
   constructor() {
       // this.API_KEY = "https://api.nasa.gov/planetary/apod"
@@ -97,18 +111,11 @@ document.addEventListener("DOMContentLoaded", function startApp() {
   const api_connection = new ApiConnection()
 
 
-  search_results_el.innerHTML = ""
-  for (let i = 0; i < 10; i++) {
-    search_results_el.appendChild(createSampleCardElement())
-  }
+  displayCardPlaceholders(search_results_el, 15)
+  
 
   api_connection
   .getRandomImages(10)
-  .then(results => {
-    search_results_el.innerHTML = ""
-    for (let result of results) {
-      search_results_el.appendChild(createCardElement(result.title, result.explanation, result.url, result.title))
-    }
-  })
+  .then(results => displayResultsAsCards(search_results_el, results))
   .catch((err) => console.error(err))
 })
