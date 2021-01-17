@@ -107,7 +107,8 @@ class ApiConnection {
 
     const resp = await fetch(request_url)
     if (resp.ok) {
-      return await resp.json()
+      const results = await resp.json()
+      return results.reverse()
     }
     throw new Error("Error fetching API, status: " + resp.status)
   }
@@ -136,6 +137,10 @@ document.addEventListener("DOMContentLoaded", function startApp() {
       const form_data = new FormData(event.target)
       const search_type = form_data.get("search-type")
       const random_count = +form_data.get("random-qty")
+      const start_date = form_data.get("start-date")
+      console.log(start_date)
+      const end_date = form_data.get("end-date")
+
       if (search_type === "random" && random_count) {
         displayCardPlaceholders(
           search_results_el,
@@ -143,6 +148,13 @@ document.addEventListener("DOMContentLoaded", function startApp() {
         )
         api_connection
           .getRandomImages(random_count)
+          .then((results) => displayResultsAsCards(search_results_el, results))
+          .catch((err) => console.error(err))
+      }
+      if (search_type === "date-range" && start_date && end_date) {
+        displayCardPlaceholders(search_results_el, 15)
+        api_connection
+          .getImagesForDateRange(start_date, end_date)
           .then((results) => displayResultsAsCards(search_results_el, results))
           .catch((err) => console.error(err))
       }
@@ -175,6 +187,7 @@ document.addEventListener("DOMContentLoaded", function startApp() {
   now_string = dateToString(new Date())
   start_date_el.max = now_string
   end_date_el.max = now_string
+  end_date_el.value = now_string
 
   start_date_el.addEventListener("change", function changeStartDateMinLimit(event) {
     if (end_date_el.valueAsDate < event.target.valueAsDate) {
@@ -182,6 +195,4 @@ document.addEventListener("DOMContentLoaded", function startApp() {
     }
     end_date_el.min = event.target.value
   })
-  
-  // end_date_el.addEventListener()
 })
