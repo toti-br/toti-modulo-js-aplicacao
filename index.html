@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NASA Astronomy Picture of the Day</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Droid+Serif|Roboto:300" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="py-4 mb-4" style="background-color: cadetblue; color: white;">
-        <h1 class="text-center">NASA Astronomy Picture of the Day</h1>
+    <header class="pt-4 pb-1 mb-4 text-center" style="background-color: cadetblue; color: white;">
+        <h1 class="display-4 px-1">Buscador de imagens de Astronomia</h1>
+        <div class="bg-dark pt-1">
+            <p class="fs-3 px-1">NASA Astronomy Picture of the Day</p>
+        </div>
     </header>
     <div class="container">
         <form id="search-form">
@@ -60,8 +64,9 @@
             </div>
         </form>
     </div>
+    <hr class="container">
     <section class="container mt-4">
-        <div class="d-flex flex-wrap justify-content-start" id="search-results"></div>
+        <div class="d-flex flex-wrap justify-content-center" id="search-results"></div>
     </section>
 
     <script src="script.js"></script>

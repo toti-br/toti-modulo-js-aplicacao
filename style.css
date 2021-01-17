@@ -1,3 +1,13 @@
+body {
+    font-family: 'Droid Serif', serif;
+    font-size: 15px;
+}
+
+h1, h2, h3 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+}
+
 .card {
     width: 18rem;
 }

@@ -13,9 +13,9 @@ document.addEventListener("DOMContentLoaded", function startApp() {
   setupSearchForm(search_form_el, api_connection, search_results_el)
 })
 
-function createCardElement(title, description, image_url, image_description) {
+function createCardElement(title, description, image_url, image_description, copyright) {
   let card_el = document.createElement("article")
-  card_el.classList.add("card", "mb-2", "me-4")
+  card_el.classList.add("card", "mb-2", "mx-4", "ms-md-0", "me-md-4")
 
   let image_el = createImageElement(image_url, image_description)
   image_el.classList.add("card-img-top")
@@ -31,11 +31,20 @@ function createCardElement(title, description, image_url, image_description) {
   text_el.textContent = truncateText(description, 100)
   text_el.classList.add("card-text")
 
+  let card_footer_el = document.createElement("div")
+  card_footer_el.classList.add("card-footer")
+
   card_body_el.appendChild(title_el)
   card_body_el.appendChild(text_el)
 
   card_el.appendChild(image_el)
   card_el.appendChild(card_body_el)
+
+  if (copyright) {
+    card_footer_el.innerHTML = '&copy; '
+    card_footer_el.textContent += copyright
+    card_el.appendChild(card_footer_el)
+  }
 
   return card_el
 }
@@ -71,8 +80,9 @@ function displayResultsAsCards(container_el, results) {
       createCardElement(
         result.title,
         result.explanation,
-        result.url,
-        result.title
+        result.thumbnail_url || result.url,
+        result.title,
+        result.copyright
       )
     )
   }
@@ -184,7 +194,7 @@ class ApiConnection {
   }
 
   async getRandomImages(count) {
-    const request_url = this.API_URL_WITH_KEY + "&count=" + count
+    const request_url = `${this.API_URL_WITH_KEY}&thumbs=true&count=${count}`
 
     const resp = await fetch(request_url)
     if (resp.ok) {
@@ -193,7 +203,7 @@ class ApiConnection {
     throw new Error("Error fetching API, status: " + resp.status)
   }
   async getImagesForDateRange(start_date, end_date) {
-    let request_url = this.API_URL_WITH_KEY
+    let request_url = `${this.API_URL_WITH_KEY}&thumbs=true`
     if (end_date) {
       request_url += "&start_date=" + start_date + "&end_date=" + end_date
     } else {
