@@ -117,6 +117,8 @@ document.addEventListener("DOMContentLoaded", function startApp() {
   const search_results_el = document.getElementById("search-results")
   const search_form_el = document.getElementById("search-form")
   const search_type_option_els = document.querySelectorAll("[name=search-type]")
+  const start_date_el = document.querySelector("[name=start-date]")
+  const end_date_el = document.querySelector("[name=end-date]")
   const api_connection = new ApiConnection()
 
   displayCardPlaceholders(search_results_el, 15)
@@ -157,4 +159,29 @@ document.addEventListener("DOMContentLoaded", function startApp() {
       }
     )
   })
+
+  function dateToString(date) {
+    const day = String(date.getDate())
+
+    const month_zero_based = date.getMonth()
+    const month = String(month_zero_based + 1).padStart(2,0)
+
+    const year = String(date.getFullYear())
+
+    return `${year}-${month}-${day}`
+  }
+
+
+  now_string = dateToString(new Date())
+  start_date_el.max = now_string
+  end_date_el.max = now_string
+
+  start_date_el.addEventListener("change", function changeStartDateMinLimit(event) {
+    if (end_date_el.valueAsDate < event.target.valueAsDate) {
+      end_date_el.value = event.target.value
+    }
+    end_date_el.min = event.target.value
+  })
+  
+  // end_date_el.addEventListener()
 })
