@@ -1,3 +1,18 @@
+document.addEventListener("DOMContentLoaded", function startApp() {
+  const search_results_el = document.getElementById("search-results")
+  const search_form_el = document.getElementById("search-form")
+  const api_connection = new ApiConnection()
+
+  displayCardPlaceholders(search_results_el, 15)
+
+  api_connection
+    .getRandomImages(15)
+    .then((results) => displayResultsAsCards(search_results_el, results))
+    .catch((err) => console.error(err))
+
+  setupSearchForm(search_form_el, api_connection, search_results_el)
+})
+
 function createCardElement(title, description, image_url, image_description) {
   let card_el = document.createElement("article")
   card_el.classList.add("card", "mb-2", "me-4")
@@ -70,12 +85,92 @@ function displayCardPlaceholders(container_el, quantity) {
   }
 }
 
-class ApiConnection {
-  constructor() {
-    // this.API_KEY = "https://api.nasa.gov/planetary/apod"
-    // this.API_URL = "DEMO_KEY"
-  }
+function dateToString(date) {
+  const day = String(date.getDate())
 
+  const month_zero_based = date.getMonth()
+  const month = String(month_zero_based + 1).padStart(2, 0)
+
+  const year = String(date.getFullYear())
+
+  return `${year}-${month}-${day}`
+}
+
+function setupSearchForm(search_form_el, api_connection, search_results_el) {
+  setupSearchFormSubmitionHandler(search_form_el, api_connection, search_results_el)
+  setupSearchTypeToggler(search_form_el)
+  setupDateInputs(search_form_el)
+}
+
+function setupSearchFormSubmitionHandler(search_form_el, api_connection, search_results_el) {
+  search_form_el.addEventListener(
+    "submit",
+    function submitSearchAndLoadResults(event) {
+      event.preventDefault()
+
+      const form_data = new FormData(event.target)
+      const search_type = form_data.get("search-type")
+      const random_count = +form_data.get("random-qty")
+      const start_date = form_data.get("start-date")
+      const end_date = form_data.get("end-date")
+
+      if (search_type === "random" && random_count) {
+        displayCardPlaceholders(
+          search_results_el,
+          random_count <= 15 ? random_count : 15
+        )
+        api_connection
+          .getRandomImages(random_count)
+          .then((results) => displayResultsAsCards(search_results_el, results))
+          .catch((err) => console.error(err))
+      }
+      if (search_type === "date-range" && start_date && end_date) {
+        displayCardPlaceholders(search_results_el, 15)
+        api_connection
+          .getImagesForDateRange(start_date, end_date)
+          .then((results) => displayResultsAsCards(search_results_el, results))
+          .catch((err) => console.error(err))
+      }
+    }
+  )
+}
+
+function setupSearchTypeToggler(search_form_el) {
+  const search_type_option_els = search_form_el.querySelectorAll(
+    "[name=search-type]"
+  )
+  Array.from(search_type_option_els).forEach((opt_el) => {
+    opt_el.addEventListener("change", function changeEnabledSearchType(event) {
+      search_form_el
+        .querySelectorAll("[data-search-type-fieldset]")
+        .forEach((fs) => {
+          fs.disabled = event.target.value !== fs.dataset.searchTypeFieldset
+        })
+    })
+  })
+}
+
+function setupDateInputs(search_form_el) {
+  const start_date_el = search_form_el.querySelector("[name=start-date]")
+  const end_date_el = search_form_el.querySelector("[name=end-date]")
+  const now_string = dateToString(new Date())
+
+  start_date_el.max = now_string
+  end_date_el.max = now_string
+  end_date_el.value = now_string
+
+  start_date_el.addEventListener(
+    "change",
+    function changeStartDateMinLimit(event) {
+      if (end_date_el.valueAsDate < event.target.valueAsDate) {
+        end_date_el.value = event.target.value
+      }
+      end_date_el.min = event.target.value
+    }
+  )
+}
+
+class ApiConnection {
   get API_URL() {
     return "https://api.nasa.gov/planetary/apod"
   }
@@ -113,86 +208,3 @@ class ApiConnection {
     throw new Error("Error fetching API, status: " + resp.status)
   }
 }
-
-document.addEventListener("DOMContentLoaded", function startApp() {
-  const search_results_el = document.getElementById("search-results")
-  const search_form_el = document.getElementById("search-form")
-  const search_type_option_els = document.querySelectorAll("[name=search-type]")
-  const start_date_el = document.querySelector("[name=start-date]")
-  const end_date_el = document.querySelector("[name=end-date]")
-  const api_connection = new ApiConnection()
-
-  displayCardPlaceholders(search_results_el, 15)
-
-  api_connection
-    .getRandomImages(10)
-    .then((results) => displayResultsAsCards(search_results_el, results))
-    .catch((err) => console.error(err))
-
-  search_form_el.addEventListener(
-    "submit",
-    function submitSearchAndLoadResults(event) {
-      event.preventDefault()
-
-      const form_data = new FormData(event.target)
-      const search_type = form_data.get("search-type")
-      const random_count = +form_data.get("random-qty")
-      const start_date = form_data.get("start-date")
-      console.log(start_date)
-      const end_date = form_data.get("end-date")
-
-      if (search_type === "random" && random_count) {
-        displayCardPlaceholders(
-          search_results_el,
-          random_count <= 15 ? random_count : 15
-        )
-        api_connection
-          .getRandomImages(random_count)
-          .then((results) => displayResultsAsCards(search_results_el, results))
-          .catch((err) => console.error(err))
-      }
-      if (search_type === "date-range" && start_date && end_date) {
-        displayCardPlaceholders(search_results_el, 15)
-        api_connection
-          .getImagesForDateRange(start_date, end_date)
-          .then((results) => displayResultsAsCards(search_results_el, results))
-          .catch((err) => console.error(err))
-      }
-    }
-  )
-
-  Array.from(search_type_option_els).forEach((opt_el) => {
-    opt_el.addEventListener(
-      "change",
-      function changeEnabledSearchType(event) {
-        document.querySelectorAll("[data-search-type-fieldset]").forEach(fs => {
-          fs.disabled = event.target.value !== fs.dataset.searchTypeFieldset
-        })
-      }
-    )
-  })
-
-  function dateToString(date) {
-    const day = String(date.getDate())
-
-    const month_zero_based = date.getMonth()
-    const month = String(month_zero_based + 1).padStart(2,0)
-
-    const year = String(date.getFullYear())
-
-    return `${year}-${month}-${day}`
-  }
-
-
-  now_string = dateToString(new Date())
-  start_date_el.max = now_string
-  end_date_el.max = now_string
-  end_date_el.value = now_string
-
-  start_date_el.addEventListener("change", function changeStartDateMinLimit(event) {
-    if (end_date_el.valueAsDate < event.target.valueAsDate) {
-      end_date_el.value = event.target.value
-    }
-    end_date_el.min = event.target.value
-  })
-})
